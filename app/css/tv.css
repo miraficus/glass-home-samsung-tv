@@ -803,3 +803,7 @@ html.gradient-mode #shade-left { opacity:.25; }
 .tile-input .input-icon { display:block; width:74px; height:65px; margin:0 0 13px; object-fit:contain; }
 .tile-input .input-caption { position:relative; font-size:24px; font-weight:600; line-height:1.15; text-align:center; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,.32); max-width:95%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
 .tile-input .input-port { display:none; }
+
+/* The default is the gradient until at least one uploaded photo is available. */
+html.no-user-photos #stage, html.gradient-mode #stage { background:radial-gradient(ellipse at 30% 4%,#164c78 0%,#0a2946 35%,#07182d 68%,#030912 100%); }
+html.no-user-photos #credit { opacity:0 !important; }
