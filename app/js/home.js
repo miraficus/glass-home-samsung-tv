@@ -363,6 +363,7 @@
     focus = 0;
     focusKey = null;
     rebuildDock();
+    if (mode === 'tabs') label.classList.remove('on');
     renderTabs();
   }
 
@@ -529,7 +530,7 @@
     var cx = layoutDock();
     var w = menu.offsetWidth || 340;
     menu.style.left = Math.round(clamp(cx - w / 2, 48, 1920 - 48 - w)) + 'px';
-    menu.style.bottom = (DOCK_BOTTOM + dockHeight() + 18) + 'px';
+    menu.style.bottom = ((activeTab === 'home' ? DOCK_BOTTOM : 250) + dockHeight() + 18) + 'px';
     mode = 'menu';
     menu.classList.add('open');
     dock.classList.add('dimmed');
