@@ -59,6 +59,13 @@
   var focusKey = null;              // the tile the viewer chose; survives dock rebuilds
   var offset = 0;
   var mode = 'dock';
+  var activeTab = ls.get('gh.redesign.tab') || 'home';
+  var backgroundMode = ls.get('gh.background.mode') === 'gradient' ? 'gradient' : 'photos';
+  function applyBackgroundMode() {
+    document.documentElement.classList.toggle('gradient-mode', backgroundMode === 'gradient');
+  }
+  if (['home', 'inputs'].indexOf(activeTab) < 0) activeTab = 'home';
+  var tabFocus = ['home', 'inputs'].indexOf(activeTab);
   var menuItems = [];
   var menuFocus = 0;
   var panelButtons = [];
@@ -190,7 +197,7 @@
       if (photoService && hidden.indexOf(k) >= 0) return;    // as for apps
       list.push({ kind: 'input', key: k, appKey: k, label: inp.label, hdmi: inp.hdmi, tv: !!inp.tv, icon: inp.icon || null });
     });
-    if (!photoService) return list;
+    if (!photoService) return activeTab === 'inputs' ? list.filter(function (it) { return it.kind === 'input'; }) : list.filter(function (it) { return it.kind !== 'input'; });
     shortcuts.forEach(function (s) {
       list.push({
         kind: s.type === 'youtube' ? 'youtube' : 'web', key: 'sc:' + s.id, scId: s.id, label: s.name, url: s.url,
@@ -199,7 +206,8 @@
       });
     });
     list.push({ kind: 'add', key: 'add', label: tr('Add photos and shortcuts') });
-    return list;
+    if (activeTab === 'inputs') return list.filter(function (it) { return it.kind === 'input'; });
+    return list.filter(function (it) { return it.kind !== 'input'; });
   }
 
   function signature(it) {
@@ -322,22 +330,40 @@
       }
       face.appendChild(div('play'));
     } else if (it.kind === 'input') {
-      if (it.icon) {
-        img = new Image();
-        img.className = 'input-icon';
-        img.alt = '';
-        img.onerror = function () { img.remove(); face.insertBefore(div('name-fallback', it.label), face.firstChild); };
-        img.src = it.icon;
-        face.appendChild(img);
-      } else {
-        face.appendChild(div('name-fallback', it.label));
-      }
-      if (!it.tv) face.appendChild(div('input-port', 'HDMI ' + it.hdmi));   // no port caption on Live TV
+      img = new Image();
+      img.className = 'input-icon';
+      img.alt = '';
+      img.onerror = function () { img.remove(); face.insertBefore(div('name-fallback', it.label), face.firstChild); };
+      img.src = it.icon || (it.tv ? 'img/inputs/live-tv.svg' : 'img/inputs/hdmi.svg');
+      face.appendChild(img);
+      face.appendChild(div('input-caption', it.label));
     } else {
       face.appendChild(plusGlyph());
     }
     face.appendChild(div('sheen'));
     return el;
+  }
+
+  function renderTabs() {
+    var names = [tr('Home'), tr('Inputs')];
+    var tabs = document.querySelectorAll('#tabs .tab');
+    for (var ti = 0; ti < tabs.length; ti++) {
+      tabs[ti].textContent = names[ti];
+      tabs[ti].classList.toggle('active', ti === ['home', 'inputs'].indexOf(activeTab));
+      tabs[ti].classList.toggle('selected', mode === 'tabs' && ti === tabFocus);
+    }
+    document.documentElement.setAttribute('data-section', activeTab);
+    $('section-heading').textContent = ''; // The active tab already names the section.
+  }
+  function switchTab(tab) {
+    if (['home', 'inputs'].indexOf(tab) < 0) return;
+    activeTab = tab;
+    ls.set('gh.redesign.tab', tab);
+    focus = 0;
+    focusKey = null;
+    rebuildDock();
+    if (mode === 'tabs') label.classList.remove('on');
+    renderTabs();
   }
 
   function rebuildDock(keepKey) {
@@ -368,6 +394,7 @@
     var idx = -1;
     for (var i = 0; i < items.length; i++) if (items[i].key === wanted) { idx = i; break; }
     setFocus(idx >= 0 ? idx : clamp(focus, 0, items.length - 1), true);
+    renderTabs();
   }
 
   function sizeFor(n) {
@@ -391,7 +418,7 @@
   function layoutDock() {
     var n = items.length;
     applySize(n);
-    var rowW = n * TILE + (n - 1) * GAP;
+    var rowW = n ? n * TILE + (n - 1) * GAP : 0;
     var viewW = Math.min(rowW, MAX_ROW);
     viewport.style.width = (viewW + 2 * EDGE) + 'px';
     var x = focus * (TILE + GAP);
@@ -417,7 +444,7 @@
   }
 
   function setFocus(i, quiet) {
-    if (!items.length) return;
+    if (!items.length) { label.classList.remove('on'); layoutDock(); return; }
     i = clamp(i, 0, items.length - 1);
     focus = i;
     items.forEach(function (it, idx) {
@@ -502,7 +529,7 @@
     var cx = layoutDock();
     var w = menu.offsetWidth || 340;
     menu.style.left = Math.round(clamp(cx - w / 2, 48, 1920 - 48 - w)) + 'px';
-    menu.style.bottom = (DOCK_BOTTOM + dockHeight() + 18) + 'px';
+    menu.style.bottom = ((activeTab === 'home' ? DOCK_BOTTOM : 250) + dockHeight() + 18) + 'px';
     mode = 'menu';
     menu.classList.add('open');
     dock.classList.add('dimmed');
@@ -595,8 +622,9 @@
     panelButtons.push({ id: 'close', label: tr('Done') });
     panelButtons.push({ id: 'ytmode', label: tr('YouTube links') + ': ' + YT_MODE_NAMES[ytMode], small: true });
     panelButtons.push({ id: 'language', label: tr('Language') + ': ' + (I.preference() === 'auto' ? tr('Automatic') : I.preference() === 'cs' ? tr('Czech') : tr('English')), small: true });
+    panelButtons.push({ id: 'background', label: tr('Background') + ': ' + tr(backgroundMode === 'gradient' ? 'Gradient' : 'Photos'), small: true });
     panelFocus = clamp(panelFocus, 0, panelButtons.length - 1);
-    panelRowFocus = clamp(panelRowFocus, 0, panelButtons.length - 3);
+    panelRowFocus = clamp(panelRowFocus, 0, panelButtons.length - 4);
 
     var wrap = $('panel-buttons');
     wrap.textContent = '';
@@ -670,6 +698,13 @@
       renderPanel();
       return;
     }
+    if (b.id === 'background') {
+      backgroundMode = backgroundMode === 'photos' ? 'gradient' : 'photos';
+      ls.set('gh.background.mode', backgroundMode);
+      applyBackgroundMode();
+      renderPanel();
+      return;
+    }
     if (b.id === 'ytmode') {
       ytMode = YT_MODES[(YT_MODES.indexOf(ytMode) + 1) % YT_MODES.length];
       ls.set('gh.ytMode', ytMode);
@@ -701,6 +736,7 @@
       e.preventDefault();
       if (mode === 'menu') closeMenu();
       else if (mode === 'panel') closePanel();
+      else if (mode === 'tabs') { mode = 'dock'; renderTabs(); if (items.length) label.classList.add('on'); }
       return;                                   // at the top level Back does nothing
     }
     if ([KEY.LEFT, KEY.RIGHT, KEY.UP, KEY.DOWN, KEY.ENTER].indexOf(k) < 0) return;
@@ -724,7 +760,7 @@
     if (mode === 'panel') {
       if (k === KEY.ENTER) { if (!e.repeat) panelAction(panelButtons[panelFocus]); return; }
       // Buttons include the YouTube mode and language settings.
-      var firstSmall = panelButtons.length - 2;
+      var firstSmall = panelButtons.length - 3;
       if (panelFocus >= firstSmall) {
         if (k === KEY.UP) panelFocus = panelRowFocus;
         else if (k === KEY.LEFT) panelFocus = Math.max(firstSmall, panelFocus - 1);
@@ -740,6 +776,15 @@
       renderPanelFocus();
       return;
     }
+    if (mode === 'tabs') {
+      if (k === KEY.LEFT) tabFocus = Math.max(0, tabFocus - 1);
+      else if (k === KEY.RIGHT) tabFocus = Math.min(1, tabFocus + 1);
+      else if (k === KEY.ENTER && !e.repeat) switchTab(['home', 'inputs'][tabFocus]);
+      else if (k === KEY.DOWN) { mode = 'dock'; if (items.length) label.classList.add('on'); }
+      renderTabs();
+      return;
+    }
+    if (k === KEY.UP) { mode = 'tabs'; tabFocus = ['home', 'inputs'].indexOf(activeTab); label.classList.remove('on'); renderTabs(); return; }
     if (k === KEY.LEFT) setFocus(focus - 1);
     else if (k === KEY.RIGHT) setFocus(focus + 1);
     else if (k === KEY.ENTER) {
@@ -784,29 +829,10 @@
     return s;
   }
 
+  // Bundled wallpapers are intentionally disabled: only user uploads rotate.
   function loadManifest() {
-    function parse(r, base) {
-      var list = r.data;
-      if (list && !Array.isArray(list)) list = list.photos || list.items || list.wallpapers || null;
-      if (!Array.isArray(list)) return null;
-      return list.map(function (w) {
-        var file = w.file || w.src || w.path;
-        if (!file) return null;
-        return {
-          key: 'w:' + file,
-          url: base + file,
-          credit: [w.title, w.author, w.licence_short || shortLicence(w.licence || w.license)].filter(Boolean).join(' · '),
-          user: false
-        };
-      }).filter(Boolean);
-    }
-    return GH.request('GET', 'wallpapers/manifest.json', undefined, 4000).then(function (r) {
-      var list = parse(r, 'wallpapers/');
-      if (list && list.length) return list;
-      return GH.request('GET', '/preview-assets/manifest.json', undefined, 3000).then(function (r2) {
-        return parse(r2, '/preview-assets/') || [];
-      });
-    }).then(function (list) { bundled = list; });
+    bundled = [];
+    return Promise.resolve();
   }
 
   // Photos uploaded since the TV last looked are shown next ("fresh"); the
@@ -821,7 +847,8 @@
       return { key: 'u:' + p.id, url: D.media(p.url), credit: '', user: true, fresh: !!known && !knownSet[p.id] };
     });
     if (st && st.photos) ls.set('gh.bg.known', list.map(function (p) { return p.id; }));
-    backdrop.setPhotos(bundled.concat(user));
+    document.documentElement.classList.toggle('no-user-photos', user.length === 0);
+    backdrop.setPhotos(user);
   }
 
   var creditTimer = null;
@@ -843,8 +870,10 @@
       if (r.changed) {
         shortcuts = (r.state && r.state.shortcuts) || [];
         rebuildDock();
-        if (backdrop) updatePhotos();
       }
+      // Reconcile uploads even when the service reports no change: the first
+      // boot may have started with an empty/stale local cache.
+      if (r.online && backdrop) updatePhotos();
       if (mode === 'panel') renderPanel();
       return r;
     });
@@ -948,6 +977,8 @@
 
   function init() {
     if (Q.still === '1') document.documentElement.classList.add('still');
+    applyBackgroundMode();
+    renderTabs();
     fitStage();
     window.addEventListener('resize', fitStage);
     renderClock();
@@ -968,6 +999,9 @@
       updatePhotos();
       var first = Q.bg ? (/^\d+$/.test(Q.bg) && bundled[+Q.bg] ? bundled[+Q.bg].key : 'w:' + Q.bg) : null;
       backdrop.start(first);
+      // Fetch the real server list immediately, not only after the normal
+      // service health/initialization sequence (which can take a while).
+      refresh();
     });
 
     document.addEventListener('keydown', onKeyDown, true);

@@ -748,3 +748,75 @@ html.still *, html.still *::before, html.still *::after { transition: none !impo
 html.lite .bg-layer img { will-change: auto; }
 /* smartHubLaunch (older TVs): frees graphics memory while an app starts. */
 html.launching #stage { display: none; }
+
+/* Redesign: navigation sections. Kept compatible with Tizen 6.5 browser. */
+#tabs { position:absolute; top:68px; left:76px; z-index:3; display:flex; padding:9px; border-radius:24px; background:rgba(9,20,34,.48); border:1px solid rgba(255,255,255,.16); -webkit-backdrop-filter:blur(22px); backdrop-filter:blur(22px); }
+#tabs .tab { padding:18px 30px; border-radius:17px; font-size:28px; font-weight:600; color:rgba(255,255,255,.72); }
+#tabs .tab.active { color:#fff; background:rgba(28,124,224,.42); }
+#tabs .tab.selected { color:#071a30; background:#e6f4ff; box-shadow:0 0 0 3px #4bb7ff,0 0 30px rgba(65,165,255,.55); }
+#section-heading { position:absolute; z-index:2; left:94px; top:245px; font-size:56px; font-weight:650; text-shadow:0 3px 25px rgba(0,0,0,.6); }
+#section-heading:empty { display:none; }
+html[data-section="apps"] #bg,html[data-section="inputs"] #bg { opacity:.27; }
+html[data-section="apps"] #stage,html[data-section="inputs"] #stage { background:radial-gradient(ellipse at 65% 5%,#143c65,#071524 62%,#040b13); }
+html[data-section="apps"] #dock,html[data-section="inputs"] #dock { bottom:250px; }
+html[data-section="apps"] #label,html[data-section="inputs"] #label { bottom:195px; }
+html[data-section="apps"] #menu,html[data-section="inputs"] #menu { bottom:460px; }
+html.ambient #tabs,html.ambient #section-heading { opacity:0; }
+html[data-section="apps"] .tile.focused .glow,html[data-section="inputs"] .tile.focused .glow { box-shadow:0 0 0 3px #64baff,0 0 55px rgba(30,135,255,.65); }
+
+/* Redesign v2: matching soft gradient glass surfaces, no flat tab buttons. */
+#tabs { background:linear-gradient(160deg,rgba(40,71,102,.75),rgba(8,18,36,.77)); border:1px solid rgba(182,219,255,.32); box-shadow:0 12px 42px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.20); }
+#tabs .tab { background:linear-gradient(155deg,rgba(255,255,255,.10),rgba(255,255,255,.01)); border:1px solid transparent; text-shadow:0 1px 4px rgba(0,0,0,.35); }
+#tabs .tab + .tab { margin-left:7px; }
+#tabs .tab.active { background:linear-gradient(155deg,#4bbaff 0%,#1778e2 52%,#07489b 100%); border-color:rgba(200,235,255,.56); box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 20px rgba(0,97,205,.34); }
+#tabs .tab.selected { background:linear-gradient(155deg,#fff,#a7d9ff); color:#102c49; border-color:#fff; text-shadow:none; box-shadow:0 0 0 3px #4bb7ff,0 0 30px rgba(65,165,255,.55); }
+#dock { background:linear-gradient(165deg,rgba(76,113,149,.44),rgba(10,25,45,.70)); border-color:rgba(185,221,255,.29); box-shadow:0 24px 65px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.21); }
+.tile .face { background:linear-gradient(150deg,rgba(190,220,250,.29),rgba(28,64,105,.32)); box-shadow:inset 0 1px 0 rgba(255,255,255,.24),inset 0 -1px 0 rgba(0,0,0,.18); }
+.tile-add .face { background:linear-gradient(145deg,rgba(160,206,245,.25),rgba(15,51,91,.36)); }
+.tile-input .face { background:linear-gradient(150deg,rgba(166,210,245,.40),rgba(25,67,110,.48)); }
+.tile.focused .glow { box-shadow:0 22px 45px rgba(0,0,0,.45),0 0 0 2px #b9e5ff,0 0 40px rgba(31,142,255,.62); }
+.tile .app-icon { border-radius:var(--tile-radius); }
+html[data-section="inputs"] #dock { background:linear-gradient(165deg,rgba(60,105,153,.55),rgba(8,27,55,.75)); }
+
+/* Redesign: settings panel and background selector. */
+#panel { background:linear-gradient(155deg,rgba(35,75,114,.94),rgba(10,29,55,.94) 60%,rgba(5,17,35,.96)); border:1px solid rgba(174,223,255,.42); box-shadow:0 38px 110px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.25),inset 0 -1px 0 rgba(26,106,181,.30); }
+#scrim { background:rgba(2,10,22,.57); }
+.step-num { background:linear-gradient(145deg,#4ab6ed,#1258a7); box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 5px 16px rgba(0,0,0,.25); }
+.panel-grid { margin:34px 0 26px; }
+.panel-buttons { margin-top:25px; }
+.panel-diag { margin-top:25px; padding-top:22px; flex-wrap:wrap; }
+.pbtn,.pbtn.small { background:linear-gradient(155deg,rgba(91,151,208,.48),rgba(14,61,119,.70)); border:1px solid rgba(177,219,255,.34); box-shadow:inset 0 1px 0 rgba(255,255,255,.26),0 7px 18px rgba(0,0,0,.20); color:#fff; }
+.pbtn.focused,.pbtn.small.focused { background:linear-gradient(155deg,#f9feff,#a8dcff); color:#0b2d51; border-color:#fff; box-shadow:0 0 0 3px #35aaff,0 0 27px rgba(30,141,255,.5); }
+.pbtn.armed:not(.focused) { background:linear-gradient(155deg,#3175b7,#123c70); }
+#panel .panel-stats { color:rgba(225,241,255,.82); }
+#panel .kv-label { color:rgba(208,232,255,.72); }
+#panel .panel-sub { color:rgba(224,240,255,.78); }
+html.gradient-mode #bg { opacity:0 !important; }
+html.gradient-mode #credit { opacity:0 !important; }
+html.gradient-mode #stage { background:radial-gradient(ellipse at 30% 4%,#164c78 0%,#0a2946 35%,#07182d 68%,#030912 100%); }
+html.gradient-mode #shade-bottom { opacity:.22; }
+html.gradient-mode #shade-top { opacity:.25; }
+html.gradient-mode #shade-left { opacity:.25; }
+
+/* Inputs: pictogram above a single caption (no repeated HDMI number). */
+.tile-input .face { flex-direction:column; }
+.tile-input .input-icon { display:block; width:74px; height:65px; margin:0 0 13px; object-fit:contain; }
+.tile-input .input-caption { position:relative; font-size:24px; font-weight:600; line-height:1.15; text-align:center; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,.32); max-width:95%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.tile-input .input-port { display:none; }
+
+/* The default is the gradient until at least one uploaded photo is available. */
+html.no-user-photos #stage, html.gradient-mode #stage { background:radial-gradient(ellipse at 30% 4%,#164c78 0%,#0a2946 35%,#07182d 68%,#030912 100%); }
+html.no-user-photos #credit { opacity:0 !important; }
+
+/* Keep both sections on the same baseline; selected tiles grow from centre. */
+html[data-section="inputs"] #dock { bottom:150px; }
+html[data-section="inputs"] #label { bottom:95px; }
+html[data-section="inputs"] #menu { bottom:360px; }
+.tile.focused { transform:scale(1.16); transform-origin:center center; }
+
+/* Polish: keep the focus sweep clipped to the tile's rounded face. */
+.tile .face { overflow:hidden; border-radius:var(--tile-radius); isolation:isolate; -webkit-mask-image:-webkit-radial-gradient(white,black); }
+.tile .sheen { border-radius:var(--tile-radius); }
+/* Diagnostics belong on their own line, below the three settings buttons. */
+#panel .panel-diag { align-content:flex-start; row-gap:10px; }
+#panel .panel-diag .diag-text { flex:0 0 100%; width:100%; margin-left:0; padding-left:0; box-sizing:border-box; }
