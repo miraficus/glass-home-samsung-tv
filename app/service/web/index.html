@@ -194,6 +194,14 @@ form { display: grid; gap: 10px; }
             <button type="button" data-v="fill">Fill</button>
           </div>
         </div>
+        <div class="optrow">
+          <span>Photo resolution</span>
+          <div class="seg small" id="photo-resolution">
+            <button type="button" data-v="1080">Full HD</button>
+            <button type="button" data-v="1440">2K</button>
+            <button type="button" data-v="2160">4K</button>
+          </div>
+        </div>
         <p class="hint" id="fit-hint"></p>
         <div class="progress" id="progress" hidden>
           <div class="ptext" id="progress-text"></div>
@@ -455,13 +463,24 @@ form { display: grid; gap: 10px; }
 
   // ---------- photos ----------
   var fitMode = store.get('gh.fit') === 'fill' ? 'fill' : 'fit';
+  var photoHeight = ['1080', '1440', '2160'].indexOf(store.get('gh.photoResolution')) >= 0 ? Number(store.get('gh.photoResolution')) : 1080;
+  function renderResolution() {
+    Array.prototype.forEach.call(document.querySelectorAll('#photo-resolution button'), function (b) {
+      b.classList.toggle('on', Number(b.getAttribute('data-v')) === photoHeight);
+    });
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('#photo-resolution button'), function (b) {
+    b.addEventListener('click', function () { photoHeight = Number(b.getAttribute('data-v')); store.set('gh.photoResolution', String(photoHeight)); renderResolution(); renderFitMode(); });
+  });
+  renderResolution();
   function renderFitMode() {
     Array.prototype.forEach.call(document.querySelectorAll('#fit-mode button'), function (b) {
       b.classList.toggle('on', b.getAttribute('data-v') === fitMode);
     });
-    $('fit-hint').textContent = fitMode === 'fit'
-      ? 'Photos are resized on this phone to 1920 × 1080 before sending. Portrait photos keep their whole picture, on soft blurred edges.'
-      : 'Photos are resized on this phone to 1920 × 1080 before sending. Portrait photos are cropped to fill the screen.';
+    var resolution = Math.round(photoHeight * 16 / 9) + ' × ' + photoHeight;
+    $('fit-hint').textContent = 'Photos are resized on this phone to ' + resolution + ' before sending. ' + (fitMode === 'fit'
+      ? 'Portrait photos keep their whole picture, on soft blurred edges.'
+      : 'Portrait photos are cropped to fill the screen.') + ' Larger photos use more TV storage (15 MB maximum per photo).';
   }
   Array.prototype.forEach.call(document.querySelectorAll('#fit-mode button'), function (b) {
     b.addEventListener('click', function () { fitMode = b.getAttribute('data-v'); store.set('gh.fit', fitMode); renderFitMode(); });
@@ -538,7 +557,7 @@ form { display: grid; gap: 10px; }
   });
 
   // Image pipeline: decode on the phone (EXIF rotation applied by the
-  // browser), centre-crop or fit to 16:9, resize to 1920x1080, JPEG 0.85.
+  // browser), centre-crop or fit to 16:9, resize to the selected 16:9 size, JPEG 0.85.
   function decodeFile(file) {
     function viaImg() {
       return new Promise(function (resolve, reject) {
@@ -592,7 +611,7 @@ form { display: grid; gap: 10px; }
   }
 
   function renderPhoto(d, mode) {
-    var W = 1920, H = 1080;
+    var H = photoHeight, W = Math.round(H * 16 / 9);
     var c = canvas(W, H);
     var ctx = c.getContext('2d');
     ctx.imageSmoothingEnabled = true;
