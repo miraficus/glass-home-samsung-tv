@@ -60,8 +60,8 @@
   var offset = 0;
   var mode = 'dock';
   var activeTab = ls.get('gh.redesign.tab') || 'home';
-  if (['home', 'apps', 'inputs'].indexOf(activeTab) < 0) activeTab = 'home';
-  var tabFocus = ['home', 'apps', 'inputs'].indexOf(activeTab);
+  if (['home', 'inputs'].indexOf(activeTab) < 0) activeTab = 'home';
+  var tabFocus = ['home', 'inputs'].indexOf(activeTab);
   var menuItems = [];
   var menuFocus = 0;
   var panelButtons = [];
@@ -203,7 +203,6 @@
     });
     list.push({ kind: 'add', key: 'add', label: tr('Add photos and shortcuts') });
     if (activeTab === 'inputs') return list.filter(function (it) { return it.kind === 'input'; });
-    if (activeTab === 'apps') return list.filter(function (it) { return it.kind !== 'input' && it.kind !== 'add'; });
     return list.filter(function (it) { return it.kind !== 'input'; });
   }
 
@@ -346,18 +345,18 @@
   }
 
   function renderTabs() {
-    var names = [tr('Home'), tr('Apps'), tr('Inputs')];
+    var names = [tr('Home'), tr('Inputs')];
     var tabs = document.querySelectorAll('#tabs .tab');
     for (var ti = 0; ti < tabs.length; ti++) {
       tabs[ti].textContent = names[ti];
-      tabs[ti].classList.toggle('active', ti === ['home', 'apps', 'inputs'].indexOf(activeTab));
+      tabs[ti].classList.toggle('active', ti === ['home', 'inputs'].indexOf(activeTab));
       tabs[ti].classList.toggle('selected', mode === 'tabs' && ti === tabFocus);
     }
     document.documentElement.setAttribute('data-section', activeTab);
-    $('section-heading').textContent = activeTab === 'home' ? '' : names[['home', 'apps', 'inputs'].indexOf(activeTab)];
+    $('section-heading').textContent = activeTab === 'home' ? '' : names[['home', 'inputs'].indexOf(activeTab)];
   }
   function switchTab(tab) {
-    if (['home', 'apps', 'inputs'].indexOf(tab) < 0) return;
+    if (['home', 'inputs'].indexOf(tab) < 0) return;
     activeTab = tab;
     ls.set('gh.redesign.tab', tab);
     focus = 0;
@@ -771,13 +770,13 @@
     }
     if (mode === 'tabs') {
       if (k === KEY.LEFT) tabFocus = Math.max(0, tabFocus - 1);
-      else if (k === KEY.RIGHT) tabFocus = Math.min(2, tabFocus + 1);
-      else if (k === KEY.ENTER && !e.repeat) switchTab(['home', 'apps', 'inputs'][tabFocus]);
+      else if (k === KEY.RIGHT) tabFocus = Math.min(1, tabFocus + 1);
+      else if (k === KEY.ENTER && !e.repeat) switchTab(['home', 'inputs'][tabFocus]);
       else if (k === KEY.DOWN) { mode = 'dock'; if (items.length) label.classList.add('on'); }
       renderTabs();
       return;
     }
-    if (k === KEY.UP) { mode = 'tabs'; tabFocus = ['home', 'apps', 'inputs'].indexOf(activeTab); label.classList.remove('on'); renderTabs(); return; }
+    if (k === KEY.UP) { mode = 'tabs'; tabFocus = ['home', 'inputs'].indexOf(activeTab); label.classList.remove('on'); renderTabs(); return; }
     if (k === KEY.LEFT) setFocus(focus - 1);
     else if (k === KEY.RIGHT) setFocus(focus + 1);
     else if (k === KEY.ENTER) {
