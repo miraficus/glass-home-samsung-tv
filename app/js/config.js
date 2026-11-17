@@ -101,7 +101,27 @@
         names: ['^prime video$', '^amazon prime video$', '\\bprime video\\b'], icon: 'img/apps/prime-video.svg' },
       { key: 'disney', label: 'Disney+', storeId: '3201901017640', ids: ['MCmYXNxgcu.DisneyPlus'],
         names: ['^disney plus$', '\\bdisney plus\\b', '^disney$'], icon: 'img/apps/disney-plus.svg' },
-      { key: 'jellyfin', label: 'Jellyfin', ids: ['org.jellyfin.tizen'], names: ['^jellyfin$'], icon: 'img/apps/jellyfin.svg' },
+      { key: 'jellyfin', label: 'Jellyfin', ids: ['AprZAARz4r.Jellyfin', 'org.jellyfin.tizen'], names: ['^jellyfin, icon: 'img/apps/jellyfin.svg' },
+      { key: 'browser', label: 'Internet', ids: ['org.tizen.browser'],
+        names: ['^internet$', '^browser$'], icon: 'img/apps/internet.svg' }
+    ],
+
+    // HDMI inputs on the dock, after the apps. `hdmi` is the port number; OK
+    // switches the TV to it and opens Samsung's TV viewer full screen.
+    // `icon`: optional, a path under app/; without it the tile shows `label`.
+    // e.g. { hdmi: 1, label: 'Games console', icon: 'img/inputs/console.png' }
+    // { tv: true, label: 'Live TV' } is the antenna: OK switches the TV to its
+    // tuner and opens the TV viewer.
+    inputs: [
+      { hdmi: 1, label: 'HDMI 1' },
+      { hdmi: 2, label: 'HDMI 2' },
+      { hdmi: 3, label: 'HDMI 3' },
+      { hdmi: 4, label: 'HDMI 4' },
+      { tv: true, label: 'Živé TV' }
+    ]
+  };
+}());
+], icon: 'img/apps/jellyfin.svg' },
       { key: 'browser', label: 'Internet', ids: ['org.tizen.browser'],
         names: ['^internet$', '^browser$'], icon: 'img/apps/internet.svg' }
     ],
