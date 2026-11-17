@@ -16,6 +16,7 @@
       'nature photos':'nature photos', 'of your photos':'of your photos', 'of yours':'of yours',
       'shortcut':'shortcut', 'shortcuts':'shortcuts', 'GB free on the TV':'GB free on the TV',
       'Home':'Home', 'Apps':'Apps', 'Inputs':'Inputs',
+      'Background':'Background', 'Photos':'Photos', 'Gradient':'Gradient',
       'Live TV':'Live TV'
     },
     cs: {
@@ -72,7 +73,8 @@
       "Storms with hail":"Bouřky s kroupami",
       'shortcut':'zástupce', 'shortcuts':'zástupců',
       'GB free on the TV':'GB volných v televizi', 'Live TV':'Živé TV',
-      'Home':'Domů', 'Apps':'Aplikace', 'Inputs':'Vstupy'
+      'Home':'Domů', 'Apps':'Aplikace', 'Inputs':'Vstupy',
+      'Background':'Pozadí', 'Photos':'Fotografie', 'Gradient':'Gradient'
     }
   };
   function tvLanguage() {
