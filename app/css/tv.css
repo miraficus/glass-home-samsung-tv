@@ -820,3 +820,8 @@ html[data-section="inputs"] #menu { bottom:360px; }
 /* Diagnostics belong on their own line, below the three settings buttons. */
 #panel .panel-diag { align-content:flex-start; row-gap:10px; }
 #panel .panel-diag .diag-text { flex:0 0 100%; width:100%; margin-left:0; padding-left:0; box-sizing:border-box; }
+
+/* Tizen compositor: transformed icon tiles can remain visible when only the
+   parent dock is transparent. Hide the viewport itself after the fade. */
+#dock-viewport { visibility:visible; transition:opacity 1.2s ease, visibility 0s linear 0s; }
+html.ambient #dock-viewport { opacity:0; visibility:hidden; transition:opacity 1.2s ease, visibility 0s linear 1.2s; }
