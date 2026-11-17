@@ -32,7 +32,7 @@
   var GAP = 28;
   var KEY = { LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, ENTER: 13, BACK: 10009, ESC: 27, BACKSPACE: 8 };
   var YT_MODES = ['payload', 'uri', 'both'];
-  var YT_MODE_NAMES = { payload: 'Smart Hub payload', uri: 'watch URL', both: 'payload + URL' };
+  var YT_MODE_NAMES = { payload: tr('Smart Hub payload'), uri: tr('watch URL'), both: tr('payload + URL') };
 
   var stage = $('stage');
   var dock = $('dock');
@@ -461,12 +461,12 @@
     else if (it.kind === 'web') p = P.openUrl(it.url);
     else p = P.openYouTube(it, ytMode);
     p.then(function (how) {
-      if (String(how).indexOf('preview:') === 0) toast('Preview: would open ' + it.label);
-      else if (how === 'youtube-home') toast('YouTube opened, but not at this video');
-      else if (how === 'browser-home') toast('The browser opened without the address');
+      if (String(how).indexOf('preview:') === 0) toast(tr('Preview: would open ') + it.label);
+      else if (how === 'youtube-home') toast(tr('YouTube opened, but not at this video'));
+      else if (how === 'browser-home') toast(tr('The browser opened without the address'));
     }, function (e) {
       if (viaSmartHub) { setLaunching(false); if (backdrop && !document.hidden) backdrop.resume(); }
-      toast('Couldn’t open ' + it.label + (e && e.message ? ' (' + e.message + ')' : ''), 4500);
+      toast(tr('Couldn’t open ') + it.label + (e && e.message ? ' (' + e.message + ')' : ''), 4500);
     });
   }
 
@@ -549,7 +549,7 @@
     D.orderShortcuts(shortcuts.map(function (s) { return s.id; })).catch(function () {
       shortcuts = before;
       rebuildDock(it.key);
-      toast('Couldn’t save the new order. Is the photo service running?');
+      toast(tr('Couldn’t save the new order. Is the photo service running?'));
     });
   }
 
@@ -557,15 +557,15 @@
     if (hidden.indexOf(it.appKey) < 0) hidden.push(it.appKey);
     ls.set('gh.hidden', hidden);
     rebuildDock();
-    toast(it.label + ' hidden. Show it again from + on the dock.');
+    toast(it.label + tr(' hidden. Show it again from + on the dock.'));
   }
 
   function removeShortcut(it) {
     D.removeShortcut(it.scId).then(function () {
       shortcuts = shortcuts.filter(function (s) { return s.id !== it.scId; });
       rebuildDock();
-      toast(it.label + ' removed');
-    }, function () { toast('Couldn’t remove it. Is the photo service running?'); });
+      toast(it.label + tr(' removed'));
+    }, function () { toast(tr('Couldn’t remove it. Is the photo service running?')); });
   }
 
   // ---------- + panel ----------
@@ -657,7 +657,7 @@
       rebuildDock();
       panelFocus = 0;
       renderPanel();
-      toast('All apps are back on the dock');
+      toast(tr('All apps are back on the dock'));
       return;
     }
     if (b.id === 'language') {
@@ -686,10 +686,10 @@
       confirmNewPw = 0;
       D.newPassword().then(function () {
         renderPanel();
-        toast('New password made. Phones and computers need to sign in again.', 4500);
+        toast(tr('New password made. Phones and computers need to sign in again.'), 4500);
       }, function () {
         renderPanel();
-        toast('Couldn’t change the password: the photo website isn’t running.', 4500);
+        toast(tr('Couldn’t change the password: the photo website isn’t running.'), 4500);
       });
     }
   }
