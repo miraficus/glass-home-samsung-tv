@@ -59,6 +59,9 @@
   var focusKey = null;              // the tile the viewer chose; survives dock rebuilds
   var offset = 0;
   var mode = 'dock';
+  var activeTab = ls.get('gh.redesign.tab') || 'home';
+  if (['home', 'apps', 'inputs'].indexOf(activeTab) < 0) activeTab = 'home';
+  var tabFocus = ['home', 'apps', 'inputs'].indexOf(activeTab);
   var menuItems = [];
   var menuFocus = 0;
   var panelButtons = [];
@@ -190,7 +193,7 @@
       if (photoService && hidden.indexOf(k) >= 0) return;    // as for apps
       list.push({ kind: 'input', key: k, appKey: k, label: inp.label, hdmi: inp.hdmi, tv: !!inp.tv, icon: inp.icon || null });
     });
-    if (!photoService) return list;
+    if (!photoService) return activeTab === 'inputs' ? list.filter(function (it) { return it.kind === 'input'; }) : list.filter(function (it) { return it.kind !== 'input'; });
     shortcuts.forEach(function (s) {
       list.push({
         kind: s.type === 'youtube' ? 'youtube' : 'web', key: 'sc:' + s.id, scId: s.id, label: s.name, url: s.url,
@@ -199,7 +202,9 @@
       });
     });
     list.push({ kind: 'add', key: 'add', label: tr('Add photos and shortcuts') });
-    return list;
+    if (activeTab === 'inputs') return list.filter(function (it) { return it.kind === 'input'; });
+    if (activeTab === 'apps') return list.filter(function (it) { return it.kind !== 'input' && it.kind !== 'add'; });
+    return list.filter(function (it) { return it.kind !== 'input'; });
   }
 
   function signature(it) {
@@ -340,6 +345,27 @@
     return el;
   }
 
+  function renderTabs() {
+    var names = [tr('Home'), tr('Apps'), tr('Inputs')];
+    var tabs = document.querySelectorAll('#tabs .tab');
+    for (var ti = 0; ti < tabs.length; ti++) {
+      tabs[ti].textContent = names[ti];
+      tabs[ti].classList.toggle('active', ti === ['home', 'apps', 'inputs'].indexOf(activeTab));
+      tabs[ti].classList.toggle('selected', mode === 'tabs' && ti === tabFocus);
+    }
+    document.documentElement.setAttribute('data-section', activeTab);
+    $('section-heading').textContent = activeTab === 'home' ? '' : names[['home', 'apps', 'inputs'].indexOf(activeTab)];
+  }
+  function switchTab(tab) {
+    if (['home', 'apps', 'inputs'].indexOf(tab) < 0) return;
+    activeTab = tab;
+    ls.set('gh.redesign.tab', tab);
+    focus = 0;
+    focusKey = null;
+    rebuildDock();
+    renderTabs();
+  }
+
   function rebuildDock(keepKey) {
     var wanted = keepKey || focusKey;
     items = buildItems();
@@ -368,6 +394,7 @@
     var idx = -1;
     for (var i = 0; i < items.length; i++) if (items[i].key === wanted) { idx = i; break; }
     setFocus(idx >= 0 ? idx : clamp(focus, 0, items.length - 1), true);
+    renderTabs();
   }
 
   function sizeFor(n) {
@@ -391,7 +418,7 @@
   function layoutDock() {
     var n = items.length;
     applySize(n);
-    var rowW = n * TILE + (n - 1) * GAP;
+    var rowW = n ? n * TILE + (n - 1) * GAP : 0;
     var viewW = Math.min(rowW, MAX_ROW);
     viewport.style.width = (viewW + 2 * EDGE) + 'px';
     var x = focus * (TILE + GAP);
@@ -417,7 +444,7 @@
   }
 
   function setFocus(i, quiet) {
-    if (!items.length) return;
+    if (!items.length) { label.classList.remove('on'); layoutDock(); return; }
     i = clamp(i, 0, items.length - 1);
     focus = i;
     items.forEach(function (it, idx) {
@@ -701,6 +728,7 @@
       e.preventDefault();
       if (mode === 'menu') closeMenu();
       else if (mode === 'panel') closePanel();
+      else if (mode === 'tabs') { mode = 'dock'; renderTabs(); if (items.length) label.classList.add('on'); }
       return;                                   // at the top level Back does nothing
     }
     if ([KEY.LEFT, KEY.RIGHT, KEY.UP, KEY.DOWN, KEY.ENTER].indexOf(k) < 0) return;
@@ -740,6 +768,15 @@
       renderPanelFocus();
       return;
     }
+    if (mode === 'tabs') {
+      if (k === KEY.LEFT) tabFocus = Math.max(0, tabFocus - 1);
+      else if (k === KEY.RIGHT) tabFocus = Math.min(2, tabFocus + 1);
+      else if (k === KEY.ENTER && !e.repeat) switchTab(['home', 'apps', 'inputs'][tabFocus]);
+      else if (k === KEY.DOWN) { mode = 'dock'; if (items.length) label.classList.add('on'); }
+      renderTabs();
+      return;
+    }
+    if (k === KEY.UP) { mode = 'tabs'; tabFocus = ['home', 'apps', 'inputs'].indexOf(activeTab); label.classList.remove('on'); renderTabs(); return; }
     if (k === KEY.LEFT) setFocus(focus - 1);
     else if (k === KEY.RIGHT) setFocus(focus + 1);
     else if (k === KEY.ENTER) {
@@ -948,6 +985,7 @@
 
   function init() {
     if (Q.still === '1') document.documentElement.classList.add('still');
+    renderTabs();
     fitStage();
     window.addEventListener('resize', fitStage);
     renderClock();
