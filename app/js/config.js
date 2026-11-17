@@ -91,18 +91,18 @@
     // apps (YouTube reports its Cobalt engine's pinwheel, Prime Video's may not
     // load, Samsung TV Plus is a system app), so those default to name tiles.
     apps: [
-      { key: 'crunchyroll', label: 'Crunchyroll', storeId: '3202302030097', ids: ['OGLLvqej7u.CrunchyrollWebApp'], names: ['^crunchyroll$'] },
+      { key: 'crunchyroll', label: 'Crunchyroll', storeId: '3202302030097', ids: ['OGLLvqej7u.CrunchyrollWebApp'], names: ['^crunchyroll$'], icon: 'img/apps/crunchyroll.svg' },
       { key: 'max', label: 'HBO Max', storeId: '3201601007230', ids: ['cj37Ni3qXM.HBONow'], names: ['^hbo max$', '^max$'], icon: 'img/apps/hbo-max.svg' },
       { key: 'youtube', label: 'YouTube', storeId: '111299001912', ids: ['9Ur5IzDKqV.TizenYouTube', 'com.samsung.tv.cobalt-yt'],
         names: ['^youtube$'], icon: 'img/apps/youtube.svg' },
       { key: 'netflix', label: 'Netflix', storeId: ['3201907018807', '11101200001'], ids: ['org.tizen.netflix-app', 'RN1MCdNq8t.Netflix'],
-        names: ['^netflix$', '\\bnetflix\\b'] },
+        names: ['^netflix$', '\\bnetflix\\b'], icon: 'img/apps/netflix.svg' },
       { key: 'prime', label: 'Prime Video', storeId: ['3201910019365', '3201512006785'], ids: ['org.tizen.primevideo', 'org.tizen.ignition', 'evKhCgZelL.AmazonIgnitionLauncher2'],
-        names: ['^prime video$', '^amazon prime video$', '\\bprime video\\b'], icon: false },
+        names: ['^prime video$', '^amazon prime video$', '\\bprime video\\b'], icon: 'img/apps/prime-video.svg' },
       { key: 'disney', label: 'Disney+', storeId: '3201901017640', ids: ['MCmYXNxgcu.DisneyPlus'],
-        names: ['^disney plus$', '\\bdisney plus\\b', '^disney$'] },
+        names: ['^disney plus$', '\\bdisney plus\\b', '^disney$'], icon: 'img/apps/disney-plus.svg' },
       { key: 'browser', label: 'Internet', ids: ['org.tizen.browser'],
-        names: ['^internet$', '^browser$'] }
+        names: ['^internet$', '^browser$'], icon: 'img/apps/internet.svg' }
     ],
 
     // HDMI inputs on the dock, after the apps. `hdmi` is the port number; OK
