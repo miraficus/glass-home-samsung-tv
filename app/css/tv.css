@@ -797,3 +797,9 @@ html.gradient-mode #stage { background:radial-gradient(ellipse at 30% 4%,#164c78
 html.gradient-mode #shade-bottom { opacity:.22; }
 html.gradient-mode #shade-top { opacity:.25; }
 html.gradient-mode #shade-left { opacity:.25; }
+
+/* Inputs: pictogram above a single caption (no repeated HDMI number). */
+.tile-input .face { flex-direction:column; }
+.tile-input .input-icon { display:block; width:74px; height:65px; margin:0 0 13px; object-fit:contain; }
+.tile-input .input-caption { position:relative; font-size:24px; font-weight:600; line-height:1.15; text-align:center; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,.32); max-width:95%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.tile-input .input-port { display:none; }
