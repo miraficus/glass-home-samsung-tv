@@ -807,3 +807,9 @@ html.gradient-mode #shade-left { opacity:.25; }
 /* The default is the gradient until at least one uploaded photo is available. */
 html.no-user-photos #stage, html.gradient-mode #stage { background:radial-gradient(ellipse at 30% 4%,#164c78 0%,#0a2946 35%,#07182d 68%,#030912 100%); }
 html.no-user-photos #credit { opacity:0 !important; }
+
+/* Keep both sections on the same baseline; selected tiles grow from centre. */
+html[data-section="inputs"] #dock { bottom:150px; }
+html[data-section="inputs"] #label { bottom:95px; }
+html[data-section="inputs"] #menu { bottom:360px; }
+.tile.focused { transform:scale(1.16); transform-origin:center center; }
