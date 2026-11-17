@@ -92,14 +92,13 @@
     // load, Samsung TV Plus is a system app), so those default to name tiles.
     apps: [
       { key: 'crunchyroll', label: 'Crunchyroll', ids: [], names: ['^crunchyroll$'] },
+      { key: 'max', label: 'HBO Max', ids: [], names: ['^hbo max$', '^max$'] },
       { key: 'youtube', label: 'YouTube', storeId: '111299001912', ids: ['9Ur5IzDKqV.TizenYouTube', 'com.samsung.tv.cobalt-yt'],
         names: ['^youtube$'], icon: false },
       { key: 'netflix', label: 'Netflix', storeId: ['3201907018807', '11101200001'], ids: ['org.tizen.netflix-app', 'RN1MCdNq8t.Netflix'],
         names: ['^netflix$', '\\bnetflix\\b'] },
       { key: 'prime', label: 'Prime Video', storeId: ['3201910019365', '3201512006785'], ids: ['org.tizen.primevideo', 'org.tizen.ignition', 'evKhCgZelL.AmazonIgnitionLauncher2'],
         names: ['^prime video$', '^amazon prime video$', '\\bprime video\\b'], icon: false },
-      { key: 'tvplus', label: 'Samsung TV Plus', ids: ['com.samsung.tv.tvPlusDeeplinker', 'com.samsung.tv.tvplus'],
-        names: ['^samsung tv plus$', '^tv plus$', 'samsung tv plus'], icon: false },
       { key: 'disney', label: 'Disney+', storeId: '3201901017640', ids: ['MCmYXNxgcu.DisneyPlus'],
         names: ['^disney plus$', '\\bdisney plus\\b', '^disney$'] },
       { key: 'browser', label: 'Internet', ids: ['org.tizen.browser'],
