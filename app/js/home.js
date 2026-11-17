@@ -596,7 +596,7 @@
     panelButtons.push({ id: 'ytmode', label: tr('YouTube links') + ': ' + YT_MODE_NAMES[ytMode], small: true });
     panelButtons.push({ id: 'language', label: tr('Language') + ': ' + (I.preference() === 'auto' ? tr('Automatic') : I.preference() === 'cs' ? tr('Czech') : tr('English')), small: true });
     panelFocus = clamp(panelFocus, 0, panelButtons.length - 1);
-    panelRowFocus = clamp(panelRowFocus, 0, panelButtons.length - 2);
+    panelRowFocus = clamp(panelRowFocus, 0, panelButtons.length - 3);
 
     var wrap = $('panel-buttons');
     wrap.textContent = '';
@@ -724,16 +724,18 @@
     if (mode === 'panel') {
       if (k === KEY.ENTER) { if (!e.repeat) panelAction(panelButtons[panelFocus]); return; }
       // Buttons include the YouTube mode and language settings.
-      var small = panelButtons.length - 1;
-      if (panelFocus === small) {
+      var firstSmall = panelButtons.length - 2;
+      if (panelFocus >= firstSmall) {
         if (k === KEY.UP) panelFocus = panelRowFocus;
+        else if (k === KEY.LEFT) panelFocus = Math.max(firstSmall, panelFocus - 1);
+        else if (k === KEY.RIGHT) panelFocus = Math.min(panelButtons.length - 1, panelFocus + 1);
       } else if (k === KEY.DOWN) {
         panelRowFocus = panelFocus;
-        panelFocus = small;
+        panelFocus = firstSmall;
       } else if (k === KEY.LEFT) {
         panelFocus = Math.max(0, panelFocus - 1);
       } else if (k === KEY.RIGHT) {
-        panelFocus = Math.min(small - 1, panelFocus + 1);
+        panelFocus = Math.min(firstSmall - 1, panelFocus + 1);
       }
       renderPanelFocus();
       return;
