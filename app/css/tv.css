@@ -813,3 +813,10 @@ html[data-section="inputs"] #dock { bottom:150px; }
 html[data-section="inputs"] #label { bottom:95px; }
 html[data-section="inputs"] #menu { bottom:360px; }
 .tile.focused { transform:scale(1.16); transform-origin:center center; }
+
+/* Polish: keep the focus sweep clipped to the tile's rounded face. */
+.tile .face { overflow:hidden; border-radius:var(--tile-radius); isolation:isolate; -webkit-mask-image:-webkit-radial-gradient(white,black); }
+.tile .sheen { border-radius:var(--tile-radius); }
+/* Diagnostics belong on their own line, below the three settings buttons. */
+#panel .panel-diag { align-content:flex-start; row-gap:10px; }
+#panel .panel-diag .diag-text { flex:0 0 100%; width:100%; margin-left:0; padding-left:0; box-sizing:border-box; }
