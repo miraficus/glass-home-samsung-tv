@@ -101,7 +101,7 @@
         names: ['^prime video$', '^amazon prime video$', '\\bprime video\\b'], icon: 'img/apps/prime-video.svg' },
       { key: 'disney', label: 'Disney+', storeId: '3201901017640', ids: ['MCmYXNxgcu.DisneyPlus'],
         names: ['^disney plus$', '\\bdisney plus\\b', '^disney$'], icon: 'img/apps/disney-plus.svg' },
-      { key: 'jellyfin', label: 'Jellyfin', ids: ['AprZAARz4r.Jellyfin', 'org.jellyfin.tizen'], names: ['^jellyfin, icon: 'img/apps/jellyfin.svg' },
+      { key: 'jellyfin', label: 'Jellyfin', ids: ['AprZAARz4r.Jellyfin', 'org.jellyfin.tizen'], names: ['^jellyfin$'], icon: 'img/apps/jellyfin.svg' },
       { key: 'browser', label: 'Internet', ids: ['org.tizen.browser'],
         names: ['^internet$', '^browser$'], icon: 'img/apps/internet.svg' }
     ],
