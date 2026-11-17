@@ -121,23 +121,3 @@
     ]
   };
 }());
-], icon: 'img/apps/jellyfin.svg' },
-      { key: 'browser', label: 'Internet', ids: ['org.tizen.browser'],
-        names: ['^internet$', '^browser$'], icon: 'img/apps/internet.svg' }
-    ],
-
-    // HDMI inputs on the dock, after the apps. `hdmi` is the port number; OK
-    // switches the TV to it and opens Samsung's TV viewer full screen.
-    // `icon`: optional, a path under app/; without it the tile shows `label`.
-    // e.g. { hdmi: 1, label: 'Games console', icon: 'img/inputs/console.png' }
-    // { tv: true, label: 'Live TV' } is the antenna: OK switches the TV to its
-    // tuner and opens the TV viewer.
-    inputs: [
-      { hdmi: 1, label: 'HDMI 1' },
-      { hdmi: 2, label: 'HDMI 2' },
-      { hdmi: 3, label: 'HDMI 3' },
-      { hdmi: 4, label: 'HDMI 4' },
-      { tv: true, label: 'Živé TV' }
-    ]
-  };
-}());
