@@ -15,6 +15,7 @@
   'use strict';
   var GH = window.GH || {};
   var cfg = GH.config && GH.config.weather;
+  function tr(key) { return GH.i18n ? GH.i18n.t(key) : key; }
   var root = document.getElementById('weather');
   var mockWx = !!(GH.config && GH.config.preview && GH.query && GH.query.wx === 'mock');
   // Off until a location is set in config.js (?wx=mock in preview shows sample data).
@@ -32,7 +33,7 @@
   var uid = 0;
 
   var dayFmt = null;
-  try { dayFmt = new Intl.DateTimeFormat(GH.config.locale || undefined, { weekday: 'short' }); } catch (e) { /* fallback below */ }
+  try { dayFmt = new Intl.DateTimeFormat(GH.config.locale || (GH.i18n && GH.i18n.locale()) || undefined, { weekday: 'short' }); } catch (e) { /* fallback below */ }
   var DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   // WMO weather codes used by Open-Meteo -> [day label, night label, icon]
@@ -209,9 +210,9 @@
     document.getElementById('wx-now-temp').textContent = showNow ? deg(c.temperature_2m) : '';
     var parts = [];
     var label = showNow ? nowInfo[night ? 1 : 0] : info(d.weather_code[i0])[0];
-    if (label) parts.push(label);
+    if (label) parts.push(tr(label));
     if (num(d.temperature_2m_max[i0]) && num(d.temperature_2m_min[i0])) {
-      parts.push('H ' + deg(d.temperature_2m_max[i0]) + '  L ' + deg(d.temperature_2m_min[i0]));
+      parts.push((GH.i18n && GH.i18n.get() === 'cs' ? 'Max ' : 'H ') + deg(d.temperature_2m_max[i0]) + (GH.i18n && GH.i18n.get() === 'cs' ? '  Min ' : '  L ') + deg(d.temperature_2m_min[i0]));
     }
     document.getElementById('wx-now-text').textContent = parts.join('  ·  ');
 

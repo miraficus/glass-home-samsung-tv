@@ -14,6 +14,7 @@
   'use strict';
   var GH = window.GH;
   var cfg = GH.config;
+  function tr(key) { return GH.i18n ? GH.i18n.t(key) : key; }
   var base = cfg.serviceBase.replace(/\/+$/, '');
   var key = window.GH_LOCAL_KEY || '';
   var STATE_KEY = 'gh.state.v1';
@@ -101,14 +102,14 @@
 
   // The password to show on the TV: { text, note }.
   D.passwordView = function () {
-    if (online !== true) return { text: null, note: 'The photo website is starting. The password shows here once it is running.' };
+    if (online !== true) return { text: null, note: tr('The photo website is starting. The password shows here once it is running.') };
     var st = D.cached();
     var pw = st && st.password;
     if (pw && pw.plain) return { text: pw.plain, note: '' };
     if (pwMem && (!pw || pwMem.id === pw.id)) return { text: pwMem.plain, note: '' };
-    if (pw && pw.generated) return { text: null, note: 'The TV doesn’t have this password to show (it was made before an update). New password makes one to show here; phones then sign in again.' };
-    if (pw) return { text: null, note: 'The password was changed on a phone or computer. Choose New password to show one here.' };
-    return { text: null, note: 'Waiting for the photo service to start…' };
+    if (pw && pw.generated) return { text: null, note: tr('The TV doesn’t have this password to show (it was made before an update). New password makes one to show here; phones then sign in again.') };
+    if (pw) return { text: null, note: tr('The password was changed on a phone or computer. Choose New password to show one here.') };
+    return { text: null, note: tr('Waiting for the photo service to start…') };
   };
 
   D.newPassword = function () {

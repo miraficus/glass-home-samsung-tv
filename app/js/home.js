@@ -15,6 +15,8 @@
   var D = GH.data;
   var Q = GH.query;
   var ls = GH.ls;
+  var I = GH.i18n;
+  function tr(key) { return I ? I.t(key) : key; }
   var $ = function (id) { return document.getElementById(id); };
 
   // Dock geometry. Tiles are 156 px; with more than 9 items they shrink to no
@@ -30,7 +32,7 @@
   var GAP = 28;
   var KEY = { LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, ENTER: 13, BACK: 10009, ESC: 27, BACKSPACE: 8 };
   var YT_MODES = ['payload', 'uri', 'both'];
-  var YT_MODE_NAMES = { payload: 'Smart Hub payload', uri: 'watch URL', both: 'payload + URL' };
+  var YT_MODE_NAMES = { payload: tr('Smart Hub payload'), uri: tr('watch URL'), both: tr('payload + URL') };
 
   var stage = $('stage');
   var dock = $('dock');
@@ -113,10 +115,14 @@
   // ---------- clock: "3:45 pm" and "Tuesday 21 October" ----------
   var timeFmt = null;
   var dateFmt = null;
-  try {
-    timeFmt = new Intl.DateTimeFormat(cfg.locale || undefined, { hour: 'numeric', minute: '2-digit' });
-    dateFmt = new Intl.DateTimeFormat(cfg.locale || undefined, { weekday: 'long', day: 'numeric', month: 'long' });
-  } catch (e) { /* very old engine: fallback below */ }
+  function initClockFormats() {
+    try {
+      var locale = cfg.locale || (I && I.locale()) || undefined;
+      timeFmt = new Intl.DateTimeFormat(locale, { hour: 'numeric', minute: '2-digit' });
+      dateFmt = new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long' });
+    } catch (e) { timeFmt = null; dateFmt = null; }
+  }
+  initClockFormats();
 
   function renderClock() {
     var now = new Date();
@@ -192,7 +198,7 @@
         icon: s.icon ? D.media(s.icon) : null, iconW: s.iconW || 0
       });
     });
-    list.push({ kind: 'add', key: 'add', label: 'Add photos and shortcuts' });
+    list.push({ kind: 'add', key: 'add', label: tr('Add photos and shortcuts') });
     return list;
   }
 
@@ -455,12 +461,12 @@
     else if (it.kind === 'web') p = P.openUrl(it.url);
     else p = P.openYouTube(it, ytMode);
     p.then(function (how) {
-      if (String(how).indexOf('preview:') === 0) toast('Preview: would open ' + it.label);
-      else if (how === 'youtube-home') toast('YouTube opened, but not at this video');
-      else if (how === 'browser-home') toast('The browser opened without the address');
+      if (String(how).indexOf('preview:') === 0) toast(tr('Preview: would open ') + it.label);
+      else if (how === 'youtube-home') toast(tr('YouTube opened, but not at this video'));
+      else if (how === 'browser-home') toast(tr('The browser opened without the address'));
     }, function (e) {
       if (viaSmartHub) { setLaunching(false); if (backdrop && !document.hidden) backdrop.resume(); }
-      toast('Couldn’t open ' + it.label + (e && e.message ? ' (' + e.message + ')' : ''), 4500);
+      toast(tr('Couldn’t open ') + it.label + (e && e.message ? ' (' + e.message + ')' : ''), 4500);
     });
   }
 
@@ -476,12 +482,12 @@
     var group = groupOf(it);
     var gi = group.indexOf(it);
     menuItems = [
-      { label: 'Move left', disabled: gi <= 0, run: function () { moveItem(it, -1); } },
-      { label: 'Move right', disabled: gi >= group.length - 1, run: function () { moveItem(it, 1); } },
-      it.kind === 'web' || it.kind === 'youtube' ? { label: 'Remove', run: function () { removeShortcut(it); } }
-        : photoService ? { label: 'Hide', run: function () { hideApp(it); } }
+      { label: tr('Move left'), disabled: gi <= 0, run: function () { moveItem(it, -1); } },
+      { label: tr('Move right'), disabled: gi >= group.length - 1, run: function () { moveItem(it, 1); } },
+      it.kind === 'web' || it.kind === 'youtube' ? { label: tr('Remove'), run: function () { removeShortcut(it); } }
+        : photoService ? { label: tr('Hide'), run: function () { hideApp(it); } }
         : null,                           // apps and inputs: no + to bring them back
-      { label: 'Cancel', run: function () {} }
+      { label: tr('Cancel'), run: function () {} }
     ].filter(Boolean);
     menuFocus = 0;
     while (menuItems[menuFocus].disabled) menuFocus += 1;
@@ -543,7 +549,7 @@
     D.orderShortcuts(shortcuts.map(function (s) { return s.id; })).catch(function () {
       shortcuts = before;
       rebuildDock(it.key);
-      toast('Couldn’t save the new order. Is the photo service running?');
+      toast(tr('Couldn’t save the new order. Is the photo service running?'));
     });
   }
 
@@ -551,45 +557,46 @@
     if (hidden.indexOf(it.appKey) < 0) hidden.push(it.appKey);
     ls.set('gh.hidden', hidden);
     rebuildDock();
-    toast(it.label + ' hidden. Show it again from + on the dock.');
+    toast(it.label + tr(' hidden. Show it again from + on the dock.'));
   }
 
   function removeShortcut(it) {
     D.removeShortcut(it.scId).then(function () {
       shortcuts = shortcuts.filter(function (s) { return s.id !== it.scId; });
       rebuildDock();
-      toast(it.label + ' removed');
-    }, function () { toast('Couldn’t remove it. Is the photo service running?'); });
+      toast(it.label + tr(' removed'));
+    }, function () { toast(tr('Couldn’t remove it. Is the photo service running?')); });
   }
 
   // ---------- + panel ----------
   function storageText() {
     if (!storage || !storage.available) return '';
-    return (storage.available / 1e9).toFixed(1) + ' GB free on the TV';
+    return (storage.available / 1e9).toFixed(1) + ' ' + tr('GB free on the TV');
   }
 
   function renderPanel() {
     var st = D.cached();
     var lan = st && st.lan;
     var url = lan && lan.url;
-    $('panel-url').textContent = url || (serviceUp === false ? 'Not running yet' : 'Starting…');
+    $('panel-url').textContent = url || (serviceUp === false ? tr('Not running yet') : tr('Starting…'));
     var pw = D.passwordView();
     $('panel-pw').textContent = pw.text || '—';
     $('panel-pw-note').textContent = pw.note || '';
     var users = (st && st.photos ? st.photos.length : 0);
     var scs = shortcuts.length;
-    var bits = [bundled.length + ' nature photos', users + (users === 1 ? ' of your photos' : ' of yours'), scs + (scs === 1 ? ' shortcut' : ' shortcuts')];
+    var bits = [bundled.length + ' ' + tr('nature photos'), users + ' ' + tr(users === 1 ? 'of your photos' : 'of yours'), scs + ' ' + tr(scs === 1 ? 'shortcut' : 'shortcuts')];
     var free = storageText();
     if (free) bits.push(free);
     $('panel-stats').textContent = bits.join('  ·  ');
 
     panelButtons = [];
-    panelButtons.push({ id: 'newpw', label: confirmNewPw ? 'Press OK again to confirm' : 'New password', cls: confirmNewPw ? 'armed' : '' });
-    if (hidden.length) panelButtons.push({ id: 'unhide', label: 'Show hidden apps (' + hidden.length + ')' });
-    panelButtons.push({ id: 'close', label: 'Done' });
-    panelButtons.push({ id: 'ytmode', label: 'YouTube links: ' + YT_MODE_NAMES[ytMode], small: true });
+    panelButtons.push({ id: 'newpw', label: tr(confirmNewPw ? 'Press OK again to confirm' : 'New password'), cls: confirmNewPw ? 'armed' : '' });
+    if (hidden.length) panelButtons.push({ id: 'unhide', label: tr('Show hidden apps') + ' (' + hidden.length + ')' });
+    panelButtons.push({ id: 'close', label: tr('Done') });
+    panelButtons.push({ id: 'ytmode', label: tr('YouTube links') + ': ' + YT_MODE_NAMES[ytMode], small: true });
+    panelButtons.push({ id: 'language', label: tr('Language') + ': ' + (I.preference() === 'auto' ? tr('Automatic') : I.preference() === 'cs' ? tr('Czech') : tr('English')), small: true });
     panelFocus = clamp(panelFocus, 0, panelButtons.length - 1);
-    panelRowFocus = clamp(panelRowFocus, 0, panelButtons.length - 2);
+    panelRowFocus = clamp(panelRowFocus, 0, panelButtons.length - 3);
 
     var wrap = $('panel-buttons');
     wrap.textContent = '';
@@ -650,7 +657,17 @@
       rebuildDock();
       panelFocus = 0;
       renderPanel();
-      toast('All apps are back on the dock');
+      toast(tr('All apps are back on the dock'));
+      return;
+    }
+    if (b.id === 'language') {
+      var choices = ['auto', 'cs', 'en'];
+      I.set(choices[(choices.indexOf(I.preference()) + 1) % choices.length]);
+      I.applyStatic();
+      initClockFormats();
+      renderClock();
+      rebuildDock();
+      renderPanel();
       return;
     }
     if (b.id === 'ytmode') {
@@ -669,10 +686,10 @@
       confirmNewPw = 0;
       D.newPassword().then(function () {
         renderPanel();
-        toast('New password made. Phones and computers need to sign in again.', 4500);
+        toast(tr('New password made. Phones and computers need to sign in again.'), 4500);
       }, function () {
         renderPanel();
-        toast('Couldn’t change the password: the photo website isn’t running.', 4500);
+        toast(tr('Couldn’t change the password: the photo website isn’t running.'), 4500);
       });
     }
   }
@@ -706,17 +723,19 @@
     }
     if (mode === 'panel') {
       if (k === KEY.ENTER) { if (!e.repeat) panelAction(panelButtons[panelFocus]); return; }
-      // Buttons sit in one row; the small YouTube switch is alone below it.
-      var small = panelButtons.length - 1;
-      if (panelFocus === small) {
+      // Buttons include the YouTube mode and language settings.
+      var firstSmall = panelButtons.length - 2;
+      if (panelFocus >= firstSmall) {
         if (k === KEY.UP) panelFocus = panelRowFocus;
+        else if (k === KEY.LEFT) panelFocus = Math.max(firstSmall, panelFocus - 1);
+        else if (k === KEY.RIGHT) panelFocus = Math.min(panelButtons.length - 1, panelFocus + 1);
       } else if (k === KEY.DOWN) {
         panelRowFocus = panelFocus;
-        panelFocus = small;
+        panelFocus = firstSmall;
       } else if (k === KEY.LEFT) {
         panelFocus = Math.max(0, panelFocus - 1);
       } else if (k === KEY.RIGHT) {
-        panelFocus = Math.min(small - 1, panelFocus + 1);
+        panelFocus = Math.min(firstSmall - 1, panelFocus + 1);
       }
       renderPanelFocus();
       return;
