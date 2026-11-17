@@ -91,8 +91,8 @@
     // apps (YouTube reports its Cobalt engine's pinwheel, Prime Video's may not
     // load, Samsung TV Plus is a system app), so those default to name tiles.
     apps: [
-      { key: 'crunchyroll', label: 'Crunchyroll', ids: [], names: ['^crunchyroll$'] },
-      { key: 'max', label: 'HBO Max', ids: [], names: ['^hbo max$', '^max$'] },
+      { key: 'crunchyroll', label: 'Crunchyroll', storeId: '3202302030097', ids: ['OGLLvqej7u.CrunchyrollWebApp'], names: ['^crunchyroll$'] },
+      { key: 'max', label: 'HBO Max', storeId: '3201601007230', ids: ['cj37Ni3qXM.HBONow'], names: ['^hbo max$', '^max$'] },
       { key: 'youtube', label: 'YouTube', storeId: '111299001912', ids: ['9Ur5IzDKqV.TizenYouTube', 'com.samsung.tv.cobalt-yt'],
         names: ['^youtube$'], icon: false },
       { key: 'netflix', label: 'Netflix', storeId: ['3201907018807', '11101200001'], ids: ['org.tizen.netflix-app', 'RN1MCdNq8t.Netflix'],
