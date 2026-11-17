@@ -330,17 +330,13 @@
       }
       face.appendChild(div('play'));
     } else if (it.kind === 'input') {
-      if (it.icon) {
-        img = new Image();
-        img.className = 'input-icon';
-        img.alt = '';
-        img.onerror = function () { img.remove(); face.insertBefore(div('name-fallback', it.label), face.firstChild); };
-        img.src = it.icon;
-        face.appendChild(img);
-      } else {
-        face.appendChild(div('name-fallback', it.label));
-      }
-      if (!it.tv) face.appendChild(div('input-port', 'HDMI ' + it.hdmi));   // no port caption on Live TV
+      img = new Image();
+      img.className = 'input-icon';
+      img.alt = '';
+      img.onerror = function () { img.remove(); face.insertBefore(div('name-fallback', it.label), face.firstChild); };
+      img.src = it.icon || (it.tv ? 'img/inputs/live-tv.svg' : 'img/inputs/hdmi.svg');
+      face.appendChild(img);
+      face.appendChild(div('input-caption', it.label));
     } else {
       face.appendChild(plusGlyph());
     }
