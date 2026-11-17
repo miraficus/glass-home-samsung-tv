@@ -829,29 +829,10 @@
     return s;
   }
 
+  // Bundled wallpapers are intentionally disabled: only user uploads rotate.
   function loadManifest() {
-    function parse(r, base) {
-      var list = r.data;
-      if (list && !Array.isArray(list)) list = list.photos || list.items || list.wallpapers || null;
-      if (!Array.isArray(list)) return null;
-      return list.map(function (w) {
-        var file = w.file || w.src || w.path;
-        if (!file) return null;
-        return {
-          key: 'w:' + file,
-          url: base + file,
-          credit: [w.title, w.author, w.licence_short || shortLicence(w.licence || w.license)].filter(Boolean).join(' · '),
-          user: false
-        };
-      }).filter(Boolean);
-    }
-    return GH.request('GET', 'wallpapers/manifest.json', undefined, 4000).then(function (r) {
-      var list = parse(r, 'wallpapers/');
-      if (list && list.length) return list;
-      return GH.request('GET', '/preview-assets/manifest.json', undefined, 3000).then(function (r2) {
-        return parse(r2, '/preview-assets/') || [];
-      });
-    }).then(function (list) { bundled = list; });
+    bundled = [];
+    return Promise.resolve();
   }
 
   // Photos uploaded since the TV last looked are shown next ("fresh"); the
@@ -866,7 +847,8 @@
       return { key: 'u:' + p.id, url: D.media(p.url), credit: '', user: true, fresh: !!known && !knownSet[p.id] };
     });
     if (st && st.photos) ls.set('gh.bg.known', list.map(function (p) { return p.id; }));
-    backdrop.setPhotos(bundled.concat(user));
+    document.documentElement.classList.toggle('no-user-photos', user.length === 0);
+    backdrop.setPhotos(user);
   }
 
   var creditTimer = null;
