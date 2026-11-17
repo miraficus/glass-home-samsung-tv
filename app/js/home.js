@@ -60,6 +60,10 @@
   var offset = 0;
   var mode = 'dock';
   var activeTab = ls.get('gh.redesign.tab') || 'home';
+  var backgroundMode = ls.get('gh.background.mode') === 'gradient' ? 'gradient' : 'photos';
+  function applyBackgroundMode() {
+    document.documentElement.classList.toggle('gradient-mode', backgroundMode === 'gradient');
+  }
   if (['home', 'inputs'].indexOf(activeTab) < 0) activeTab = 'home';
   var tabFocus = ['home', 'inputs'].indexOf(activeTab);
   var menuItems = [];
@@ -622,8 +626,9 @@
     panelButtons.push({ id: 'close', label: tr('Done') });
     panelButtons.push({ id: 'ytmode', label: tr('YouTube links') + ': ' + YT_MODE_NAMES[ytMode], small: true });
     panelButtons.push({ id: 'language', label: tr('Language') + ': ' + (I.preference() === 'auto' ? tr('Automatic') : I.preference() === 'cs' ? tr('Czech') : tr('English')), small: true });
+    panelButtons.push({ id: 'background', label: tr('Background') + ': ' + tr(backgroundMode === 'gradient' ? 'Gradient' : 'Photos'), small: true });
     panelFocus = clamp(panelFocus, 0, panelButtons.length - 1);
-    panelRowFocus = clamp(panelRowFocus, 0, panelButtons.length - 3);
+    panelRowFocus = clamp(panelRowFocus, 0, panelButtons.length - 4);
 
     var wrap = $('panel-buttons');
     wrap.textContent = '';
@@ -697,6 +702,13 @@
       renderPanel();
       return;
     }
+    if (b.id === 'background') {
+      backgroundMode = backgroundMode === 'photos' ? 'gradient' : 'photos';
+      ls.set('gh.background.mode', backgroundMode);
+      applyBackgroundMode();
+      renderPanel();
+      return;
+    }
     if (b.id === 'ytmode') {
       ytMode = YT_MODES[(YT_MODES.indexOf(ytMode) + 1) % YT_MODES.length];
       ls.set('gh.ytMode', ytMode);
@@ -752,7 +764,7 @@
     if (mode === 'panel') {
       if (k === KEY.ENTER) { if (!e.repeat) panelAction(panelButtons[panelFocus]); return; }
       // Buttons include the YouTube mode and language settings.
-      var firstSmall = panelButtons.length - 2;
+      var firstSmall = panelButtons.length - 3;
       if (panelFocus >= firstSmall) {
         if (k === KEY.UP) panelFocus = panelRowFocus;
         else if (k === KEY.LEFT) panelFocus = Math.max(firstSmall, panelFocus - 1);
@@ -985,6 +997,7 @@
 
   function init() {
     if (Q.still === '1') document.documentElement.classList.add('still');
+    applyBackgroundMode();
     renderTabs();
     fitStage();
     window.addEventListener('resize', fitStage);
