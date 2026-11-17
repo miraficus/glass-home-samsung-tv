@@ -353,7 +353,7 @@
       tabs[ti].classList.toggle('selected', mode === 'tabs' && ti === tabFocus);
     }
     document.documentElement.setAttribute('data-section', activeTab);
-    $('section-heading').textContent = activeTab === 'home' ? '' : names[['home', 'inputs'].indexOf(activeTab)];
+    $('section-heading').textContent = ''; // The active tab already names the section.
   }
   function switchTab(tab) {
     if (['home', 'inputs'].indexOf(tab) < 0) return;
@@ -870,8 +870,10 @@
       if (r.changed) {
         shortcuts = (r.state && r.state.shortcuts) || [];
         rebuildDock();
-        if (backdrop) updatePhotos();
       }
+      // Reconcile uploads even when the service reports no change: the first
+      // boot may have started with an empty/stale local cache.
+      if (r.online && backdrop) updatePhotos();
       if (mode === 'panel') renderPanel();
       return r;
     });
@@ -997,6 +999,9 @@
       updatePhotos();
       var first = Q.bg ? (/^\d+$/.test(Q.bg) && bundled[+Q.bg] ? bundled[+Q.bg].key : 'w:' + Q.bg) : null;
       backdrop.start(first);
+      // Fetch the real server list immediately, not only after the normal
+      // service health/initialization sequence (which can take a while).
+      refresh();
     });
 
     document.addEventListener('keydown', onKeyDown, true);
